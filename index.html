@@ -110,6 +110,15 @@
             <button id="drive-back-btn" class="btn-subtle" onclick="driveGoBack()" style="display:none;">&#8592; Back</button>
           </div>
         </div>
+        <div class="card-header" style="padding-top:8px;padding-bottom:8px;border-top:none;">
+          <div class="filter-tabs">
+            <button class="filter-tab drive-filter-tab active" data-filter="all"    onclick="filterDrive('all')">All</button>
+            <button class="filter-tab drive-filter-tab"        data-filter="folder" onclick="filterDrive('folder')">Folders</button>
+            <button class="filter-tab drive-filter-tab"        data-filter="pdf"    onclick="filterDrive('pdf')">PDFs</button>
+            <button class="filter-tab drive-filter-tab"        data-filter="doc"    onclick="filterDrive('doc')">Docs</button>
+            <button class="filter-tab drive-filter-tab"        data-filter="image"  onclick="filterDrive('image')">Images</button>
+          </div>
+        </div>
         <div class="card-body">
           <div class="drive-path" id="drive-path"></div>
           <div id="drive-content"><div class="empty-state">Connect Google Calendar above to browse your Drive</div></div>

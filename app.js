@@ -60,6 +60,8 @@ let colorMap     = {};                  // name → color index
 let colorCounter = 0;
 
 let driveStack   = [{ id: 'root', name: 'My Drive' }];
+let driveFiles   = [];   // all files in current folder
+let driveFilter  = 'all';
 let settingsOpen = false;
 
 /* ============================================================
@@ -685,35 +687,82 @@ function iconFor(mt) {
   return '📎';
 }
 
+function driveFileType(mt) {
+  if (mt === 'application/vnd.google-apps.folder')           return 'folder';
+  if (mt === 'application/pdf')                               return 'pdf';
+  if (mt && mt.includes('image'))                             return 'image';
+  if (mt && (mt.includes('word') || mt.includes('document'))) return 'doc';
+  if (mt && (mt.includes('sheet') || mt.includes('spreadsheet'))) return 'sheet';
+  if (mt && (mt.includes('presentation') || mt.includes('powerpoint'))) return 'slides';
+  return 'other';
+}
+
+function filterDrive(f) {
+  driveFilter = f;
+  // Update filter tab styles
+  document.querySelectorAll('.drive-filter-tab').forEach(b =>
+    b.classList.toggle('active', b.dataset.filter === f)
+  );
+  renderDriveFiles();
+}
+
+function renderDriveFiles() {
+  const content = document.getElementById('drive-content');
+  const filtered = driveFilter === 'all'
+    ? driveFiles
+    : driveFiles.filter(f => driveFileType(f.mimeType) === driveFilter);
+
+  document.getElementById('drive-status').textContent =
+    `${filtered.length} of ${driveFiles.length} item${driveFiles.length !== 1 ? 's' : ''}`;
+
+  if (!filtered.length) {
+    content.innerHTML = '<div class="empty-state">No files match this filter</div>';
+    return;
+  }
+
+  const typeLabels = { folder:'Folder', pdf:'PDF', image:'Image', doc:'Document', sheet:'Spreadsheet', slides:'Slides', other:'File' };
+  content.innerHTML = `<div class="drive-grid">${filtered.map(f => `
+    <div class="drive-item" onclick="driveClick('${f.id}','${f.mimeType.replace(/'/g,"\\'")}','${encodeURIComponent(f.name)}')">
+      <div style="font-size:22px;line-height:1;">${iconFor(f.mimeType)}</div>
+      <div class="drive-item-name">${f.name}</div>
+      <div class="drive-item-meta">${typeLabels[driveFileType(f.mimeType)]}</div>
+    </div>`).join('')}</div>`;
+}
+
 async function loadDriveFolder(folderId) {
   const content = document.getElementById('drive-content');
   content.innerHTML = '<div class="empty-state" style="color:var(--accent2);">Loading files...</div>';
   updateDrivePath();
   try {
-    const q    = folderId === 'root'
+    const q = folderId === 'root'
       ? `'root' in parents and trashed=false`
       : `'${folderId}' in parents and trashed=false`;
     const data = await gFetch(
       `https://www.googleapis.com/drive/v3/files?q=${encodeURIComponent(q)}` +
-      `&fields=files(id,name,mimeType)&orderBy=folder,name&pageSize=60`
+      `&fields=files(id,name,mimeType)&orderBy=folder,name&pageSize=100`
     );
-    const files = data.files || [];
+    driveFiles = data.files || [];
     document.getElementById('drive-back-btn').style.display = driveStack.length > 1 ? 'inline-flex' : 'none';
-    document.getElementById('drive-status').textContent = `${files.length} item${files.length !== 1 ? 's' : ''}`;
-    if (!files.length) { content.innerHTML = '<div class="empty-state">This folder is empty</div>'; return; }
-    content.innerHTML = `<div class="drive-grid">${files.map(f => `
-      <div class="drive-item" onclick="driveClick('${f.id}','${f.mimeType.replace(/'/g,"\\'")}','${encodeURIComponent(f.name)}')">
-        <div style="font-size:22px;line-height:1;">${iconFor(f.mimeType)}</div>
-        <div class="drive-item-name">${f.name}</div>
-        <div class="drive-item-meta">${f.mimeType === 'application/vnd.google-apps.folder' ? 'Folder' : f.mimeType === 'application/pdf' ? 'PDF' : 'File'}</div>
-      </div>`).join('')}</div>`;
+    if (!driveFiles.length) {
+      document.getElementById('drive-status').textContent = '0 items';
+      content.innerHTML = '<div class="empty-state">This folder is empty</div>';
+      return;
+    }
+    renderDriveFiles();
   } catch (err) { content.innerHTML = '<div class="empty-state">Could not load Drive</div>'; console.error(err); }
 }
 
 function driveClick(id, mt, encodedName) {
   const name = decodeURIComponent(encodedName);
-  if (mt === 'application/vnd.google-apps.folder') { driveStack.push({ id, name }); loadDriveFolder(id); }
-  else if (mt === 'application/pdf')                openPdfPreview(id, name);
+  if (mt === 'application/vnd.google-apps.folder') {
+    driveStack.push({ id, name });
+    driveFilter = 'all';
+    document.querySelectorAll('.drive-filter-tab').forEach(b =>
+      b.classList.toggle('active', b.dataset.filter === 'all')
+    );
+    loadDriveFolder(id);
+  }
+  else if (mt === 'application/pdf') openPdfPreview(id, name);
   else window.open(`https://drive.google.com/file/d/${id}/view`, '_blank');
 }
 function driveGoBack() {
