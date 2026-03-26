@@ -586,8 +586,23 @@ header {
 .badge-assignment { background: var(--warn-muted);    color: var(--warn); }
 .badge-deadline   { background: var(--danger-muted);  color: var(--danger); }
 .badge-gtasks     { background: var(--blue-muted);    color: var(--blue); }
-.task-delete { background: transparent; border: none; color: var(--text3); cursor: pointer; font-size: 13px; opacity: 0; width: 18px; flex-shrink: 0; transition: opacity 0.15s; }
-.task-item:hover .task-delete { opacity: 1; }
+.task-delete {
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0.5;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.task-delete:hover { opacity: 1; background: var(--danger-muted); color: var(--danger); }
 
 /* ============================================================
    SETTINGS / EXCLUDE TAGS

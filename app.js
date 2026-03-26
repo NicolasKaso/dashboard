@@ -3,7 +3,7 @@
    ============================================================ */
 const CLIENT_ID = '525270045169-ro6l87v50nn2ed2cufgdqub2qhodclfj.apps.googleusercontent.com';
 const SCOPES = [
-  'https://www.googleapis.com/auth/calendar.readonly',
+  'https://www.googleapis.com/auth/calendar',
   'https://www.googleapis.com/auth/tasks.readonly',
   'https://www.googleapis.com/auth/drive.readonly'
 ].join(' ');
@@ -651,20 +651,88 @@ function renderTasks() {
       ${t.source !== 'gtasks' ? `<button class="task-delete" onclick="deleteTask('${t.id}')">✕</button>` : ''}
     </div>`).join('');
 }
-function addTask() {
+
+async function addTask() {
   const inp  = document.getElementById('task-input');
   const text = inp.value.trim();
   if (!text) return;
-  tasks.push({ id: Date.now(), text, type: document.getElementById('task-type').value, done: false });
+  const type = document.getElementById('task-type').value;
+  const id   = Date.now();
+  tasks.push({ id, text, type, done: false });
   inp.value = ''; save('tasks', tasks); renderTasks();
+
+  // Push assignments and deadlines to Google Calendar if connected
+  if (isTokenValid() && (type === 'assignment' || type === 'deadline')) {
+    await pushTaskToCalendar(text, type, id);
+  }
 }
+
+async function pushTaskToCalendar(text, type, localId) {
+  try {
+    // Create an all-day event on today's date as a placeholder
+    // User can move it in Google Calendar to the real due date
+    const today = new Date().toISOString().split('T')[0];
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+    const event = {
+      summary: text,
+      description: `Added from dashboard (${type})`,
+      start: { date: today },
+      end:   { date: tomorrowStr },
+      colorId: type === 'assignment' ? '5' : '11', // banana for assignment, tomato for deadline
+    };
+
+    const res = await fetch(
+      'https://www.googleapis.com/calendar/v3/calendars/primary/events',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(event),
+      }
+    );
+    const data = await res.json();
+    if (data.error) { console.error('Calendar push error:', data.error.message); return; }
+
+    // Store the Google Calendar event ID on the task so we can delete it later
+    tasks = tasks.map(t => String(t.id) === String(localId) ? { ...t, gcalEventId: data.id } : t);
+    save('tasks', tasks);
+
+    // Refresh calendar view
+    calEvents = {};
+    if (isTokenValid()) fetchEventsForView();
+  } catch (err) {
+    console.error('Failed to push to Google Calendar:', err);
+  }
+}
+
 function toggleTask(id) {
   tasks = tasks.map(t => String(t.id) === String(id) ? { ...t, done: !t.done } : t);
   save('tasks', tasks); renderTasks();
 }
-function deleteTask(id) {
+
+async function deleteTask(id) {
+  const task = tasks.find(t => String(t.id) === String(id));
   tasks = tasks.filter(t => String(t.id) !== String(id));
   save('tasks', tasks); renderTasks();
+
+  // Also delete from Google Calendar if it was pushed there
+  if (task && task.gcalEventId && isTokenValid()) {
+    try {
+      await fetch(
+        `https://www.googleapis.com/calendar/v3/calendars/primary/events/${task.gcalEventId}`,
+        { method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` } }
+      );
+      calEvents = {};
+      if (isTokenValid()) fetchEventsForView();
+    } catch (err) {
+      console.error('Failed to delete from Google Calendar:', err);
+    }
+  }
 }
 function filterTasks(f) {
   currentFilter = f;
