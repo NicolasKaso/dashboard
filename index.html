@@ -104,7 +104,7 @@
       <!-- Drive -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Notes &amp; PDFs</span>
+          <span class="card-title">Files</span>
           <div class="header-actions">
             <span id="drive-status" class="drive-status"></span>
             <button id="drive-back-btn" class="btn-subtle" onclick="driveGoBack()" style="display:none;">&#8592; Back</button>
@@ -112,11 +112,22 @@
         </div>
         <div class="card-header" style="padding-top:8px;padding-bottom:8px;border-top:none;">
           <div class="filter-tabs">
-            <button class="filter-tab drive-filter-tab active" data-filter="all"    onclick="filterDrive('all')">All</button>
-            <button class="filter-tab drive-filter-tab"        data-filter="folder" onclick="filterDrive('folder')">Folders</button>
-            <button class="filter-tab drive-filter-tab"        data-filter="pdf"    onclick="filterDrive('pdf')">PDFs</button>
-            <button class="filter-tab drive-filter-tab"        data-filter="doc"    onclick="filterDrive('doc')">Docs</button>
-            <button class="filter-tab drive-filter-tab"        data-filter="image"  onclick="filterDrive('image')">Images</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="all"    onclick="setAllDriveFilters(true)">All</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="folder" onclick="toggleDriveFilter('folder')">Folders</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="pdf"    onclick="toggleDriveFilter('pdf')">PDFs</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="doc"    onclick="toggleDriveFilter('doc')">Docs</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="image"  onclick="toggleDriveFilter('image')">Images</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="sheet"  onclick="toggleDriveFilter('sheet')">Sheets</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="slides" onclick="toggleDriveFilter('slides')">Slides</button>
+            <div class="drive-filter-extra">
+              <button class="filter-tab drive-filter-more-btn" id="drive-filter-more-btn" onclick="toggleDriveMoreMenu()">More ▾</button>
+              <div class="drive-filter-menu" id="drive-filter-menu">
+                <label class="drive-filter-menu-item">
+                  <input type="checkbox" id="drive-filter-other" onchange="toggleHiddenDriveType('other', this.checked)">
+                  <span>Other files</span>
+                </label>
+              </div>
+            </div>
           </div>
         </div>
         <div class="card-body">

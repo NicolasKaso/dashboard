@@ -538,6 +538,27 @@ header {
 .urgent { color: var(--danger); }
 .soon   { color: var(--warn); }
 .ok     { color: var(--accent2); }
+.deadline-delete {
+  background: transparent;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-size: 13px;
+  opacity: 0.55;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+.deadline-delete:hover {
+  opacity: 1;
+  background: var(--danger-muted);
+  color: var(--danger);
+}
 
 /* ============================================================
    TASKS
@@ -554,6 +575,31 @@ header {
   transition: all 0.15s;
 }
 .filter-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+.drive-filter-extra { position: relative; }
+.drive-filter-more-btn { user-select: none; }
+.drive-filter-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 150px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 8px;
+  z-index: 20;
+  display: none;
+}
+.drive-filter-menu.open { display: block; }
+.drive-filter-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+}
+.drive-filter-menu-item input { accent-color: var(--accent); }
 
 .task-input-row { display: flex; gap: 7px; margin-bottom: 11px; }
 .tasks-list { display: flex; flex-direction: column; gap: 5px; max-height: 270px; overflow-y: auto; }

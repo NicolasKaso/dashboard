@@ -61,7 +61,10 @@ let colorCounter = 0;
 
 let driveStack   = [{ id: 'root', name: 'My Drive' }];
 let driveFiles   = [];   // all files in current folder
-let driveFilter  = 'all';
+let driveTypeFilters = load('driveTypeFilters', {
+  folder: true, pdf: true, doc: true, image: true, sheet: true, slides: true, other: true
+});
+let driveMoreMenuOpen = false;
 let settingsOpen = false;
 
 /* ============================================================
@@ -562,12 +565,20 @@ function renderDeadlines() {
         <div class="deadline-name">${d.name}</div>
         <div class="deadline-course">${d.course}</div>
       </div>
+      <button class="deadline-delete" onclick="deleteDeadline('${d.id}')" title="Delete deadline">✕</button>
       <div style="flex-shrink:0;">
         <div class="deadline-date ${cls}">${dStr}</div>
         <div class="deadline-days">${lbl}</div>
       </div>
     </div>`;
   }).join('');
+}
+
+function deleteDeadline(id) {
+  if (!confirm('Delete this deadline?')) return;
+  deadlines = deadlines.filter(d => String(d.id) !== String(id));
+  save('deadlines', deadlines);
+  renderDeadlines();
 }
 
 /* ============================================================
@@ -765,20 +776,70 @@ function driveFileType(mt) {
   return 'other';
 }
 
-function filterDrive(f) {
-  driveFilter = f;
-  // Update filter tab styles
-  document.querySelectorAll('.drive-filter-tab').forEach(b =>
-    b.classList.toggle('active', b.dataset.filter === f)
-  );
+function setAllDriveFilters(isOn) {
+  Object.keys(driveTypeFilters).forEach(k => { driveTypeFilters[k] = isOn; });
+  save('driveTypeFilters', driveTypeFilters);
+  syncDriveFilterButtons();
   renderDriveFiles();
+}
+
+function toggleDriveFilter(type) {
+  if (!(type in driveTypeFilters)) return;
+  driveTypeFilters[type] = !driveTypeFilters[type];
+
+  // Keep at least one file type selected.
+  if (!Object.values(driveTypeFilters).some(Boolean)) {
+    driveTypeFilters[type] = true;
+  }
+
+  save('driveTypeFilters', driveTypeFilters);
+  syncDriveFilterButtons();
+  renderDriveFiles();
+}
+
+function toggleHiddenDriveType(type, isOn) {
+  if (!(type in driveTypeFilters)) return;
+  driveTypeFilters[type] = !!isOn;
+
+  // Keep at least one file type selected.
+  if (!Object.values(driveTypeFilters).some(Boolean)) {
+    driveTypeFilters[type] = true;
+  }
+
+  save('driveTypeFilters', driveTypeFilters);
+  syncDriveFilterButtons();
+  renderDriveFiles();
+}
+
+function toggleDriveMoreMenu() {
+  driveMoreMenuOpen = !driveMoreMenuOpen;
+  const menu = document.getElementById('drive-filter-menu');
+  if (menu) menu.classList.toggle('open', driveMoreMenuOpen);
+}
+
+function closeDriveMoreMenu() {
+  driveMoreMenuOpen = false;
+  const menu = document.getElementById('drive-filter-menu');
+  if (menu) menu.classList.remove('open');
+}
+
+function syncDriveFilterButtons() {
+  const allOn = Object.values(driveTypeFilters).every(Boolean);
+  document.querySelectorAll('.drive-filter-tab').forEach(b => {
+    const filter = b.dataset.filter;
+    if (filter === 'all') {
+      b.classList.toggle('active', allOn);
+      return;
+    }
+    b.classList.toggle('active', !!driveTypeFilters[filter]);
+  });
+  const otherToggle = document.getElementById('drive-filter-other');
+  if (otherToggle) otherToggle.checked = !!driveTypeFilters.other;
 }
 
 function renderDriveFiles() {
   const content = document.getElementById('drive-content');
-  const filtered = driveFilter === 'all'
-    ? driveFiles
-    : driveFiles.filter(f => driveFileType(f.mimeType) === driveFilter);
+  const filtered = driveFiles.filter(f => !!driveTypeFilters[driveFileType(f.mimeType)]);
 
   document.getElementById('drive-status').textContent =
     `${filtered.length} of ${driveFiles.length} item${driveFiles.length !== 1 ? 's' : ''}`;
@@ -824,10 +885,7 @@ function driveClick(id, mt, encodedName) {
   const name = decodeURIComponent(encodedName);
   if (mt === 'application/vnd.google-apps.folder') {
     driveStack.push({ id, name });
-    driveFilter = 'all';
-    document.querySelectorAll('.drive-filter-tab').forEach(b =>
-      b.classList.toggle('active', b.dataset.filter === 'all')
-    );
+    setAllDriveFilters(true);
     loadDriveFolder(id);
   }
   else if (mt === 'application/pdf') openPdfPreview(id, name);
@@ -866,6 +924,7 @@ calDate = new Date();
 renderCalView();
 renderDeadlines();
 renderTasks();
+syncDriveFilterButtons();
 
 if (isTokenValid()) {
   updateGCalButton(true);
@@ -874,3 +933,9 @@ if (isTokenValid()) {
   fetchGoogleTasks();
   loadDriveFolder('root');
 }
+
+document.addEventListener('click', function(e) {
+  const menuWrap = document.querySelector('.drive-filter-extra');
+  if (!menuWrap) return;
+  if (!menuWrap.contains(e.target)) closeDriveMoreMenu();
+});
