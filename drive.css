@@ -1,0 +1,83 @@
+/* drive.css
+   Styles for the Google Drive file browser: breadcrumb, grid,
+   file items, filter dropdown ("More" menu).
+   Depends on: tokens.css, base.css, tasks.css (filter-tab base styles)
+   ============================================================ */
+
+/* ============================================================
+   DRIVE STATUS & BREADCRUMB
+   ============================================================ */
+.drive-status  { font-size: 11px; color: var(--text3); }
+.drive-path {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-bottom: 10px;
+  flex-wrap: wrap;
+  min-height: 24px;
+}
+.drive-crumb   { font-size: 12px; color: var(--accent); cursor: pointer; font-weight: 500; }
+.drive-crumb:hover { text-decoration: underline; }
+.drive-sep     { font-size: 12px; color: var(--text3); }
+.drive-current { font-size: 12px; font-weight: 500; color: var(--text2); }
+
+/* ============================================================
+   FILE GRID
+   ============================================================ */
+.drive-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 8px;
+}
+.drive-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 13px 9px 11px;
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+  transition: all 0.15s;
+}
+.drive-item:hover        { border-color: var(--border2); background: var(--bg3); }
+.drive-item-name {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text);
+  line-height: 1.3;
+  word-break: break-word;
+}
+.drive-item-meta { font-size: 10px; color: var(--text3); }
+
+/* ============================================================
+   FILTER "MORE" DROPDOWN
+   ============================================================ */
+.drive-filter-extra    { position: relative; }
+.drive-filter-more-btn { user-select: none; }
+
+.drive-filter-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 150px;
+  background: var(--surface);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  padding: 8px;
+  z-index: 20;
+  display: none;
+}
+.drive-filter-menu.open { display: block; }
+.drive-filter-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  color: var(--text2);
+  cursor: pointer;
+}
+.drive-filter-menu-item input { accent-color: var(--accent); }

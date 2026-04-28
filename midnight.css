@@ -1,0 +1,145 @@
+/* midnight.css
+   Midnight dark-variant overrides — fine-tunes component visibility
+   for the deepest dark mode. Loaded last so these rules win.
+   Depends on: tokens.css, base.css, calendar.css, tasks.css, drive.css,
+               deadlines.css, modals.css
+   ============================================================ */
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .btn-primary {
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+[data-theme="dark"][data-dark-variant="midnight"] .btn-primary:hover {
+  background: var(--accent2);
+  opacity: 1;
+}
+
+[data-theme="dark"][data-dark-variant="midnight"] .btn-accent {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 500;
+}
+[data-theme="dark"][data-dark-variant="midnight"] .btn-accent:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+[data-theme="dark"][data-dark-variant="midnight"] .btn-subtle {
+  background: var(--surface2);
+  border-color: var(--border2);
+  color: var(--text2);
+}
+[data-theme="dark"][data-dark-variant="midnight"] .btn-subtle:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ============================================================
+   FORM FIELDS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .field {
+  background: var(--bg2);
+  border-color: var(--border2);
+  color: var(--text);
+}
+[data-theme="dark"][data-dark-variant="midnight"] .field:focus {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+[data-theme="dark"][data-dark-variant="midnight"] .field-sm {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+/* ============================================================
+   THEME SWITCH
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .theme-switch {
+  background: var(--bg3);
+}
+[data-theme="dark"][data-dark-variant="midnight"] .theme-chip.active {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow);
+}
+
+/* ============================================================
+   CALENDAR CONTROLS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .view-tab       { color: var(--text3); }
+[data-theme="dark"][data-dark-variant="midnight"] .view-tab:hover { color: var(--accent); background: var(--surface); }
+[data-theme="dark"][data-dark-variant="midnight"] .view-tab.active { background: var(--surface); color: var(--accent); font-weight: 500; }
+
+[data-theme="dark"][data-dark-variant="midnight"] .cal-nav-btn       { background: var(--surface2); border-color: var(--border2); color: var(--text2); }
+[data-theme="dark"][data-dark-variant="midnight"] .cal-nav-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--surface); }
+[data-theme="dark"][data-dark-variant="midnight"] .today-btn         { color: var(--accent) !important; border-color: var(--accent) !important; }
+
+[data-theme="dark"][data-dark-variant="midnight"] .gcal-btn          { background: var(--surface2); border-color: var(--border2); color: var(--text2); }
+[data-theme="dark"][data-dark-variant="midnight"] .gcal-btn:hover    { border-color: var(--accent); color: var(--accent); }
+[data-theme="dark"][data-dark-variant="midnight"] .gcal-btn.connected { background: var(--accent2-muted); border-color: var(--accent2); color: var(--accent2); }
+
+/* ============================================================
+   FILTER TABS (Tasks + Drive)
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .filter-tab        { background: var(--surface2); border-color: var(--border2); color: var(--text2); }
+[data-theme="dark"][data-dark-variant="midnight"] .filter-tab:hover  { background: var(--accent-muted); border-color: var(--accent); color: var(--accent); }
+[data-theme="dark"][data-dark-variant="midnight"] .filter-tab.active { background: var(--accent); border-color: var(--accent); color: #ffffff; }
+
+/* ============================================================
+   DRIVE FILTER TABS (duplicate selector for specificity parity)
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .drive-filter-tab        { background: var(--surface2); border-color: var(--border2); color: var(--text2); transition: all 0.2s ease; }
+[data-theme="dark"][data-dark-variant="midnight"] .drive-filter-tab:hover  { background: var(--accent-muted); border-color: var(--accent); color: var(--accent); }
+[data-theme="dark"][data-dark-variant="midnight"] .drive-filter-tab.active { background: var(--accent); border-color: var(--accent); color: #ffffff; font-weight: 500; }
+
+/* ============================================================
+   DRIVE ITEMS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .drive-item           { background: var(--surface2); border: 1px solid var(--border); }
+[data-theme="dark"][data-dark-variant="midnight"] .drive-item:hover     { background: var(--bg3); border-color: var(--accent); }
+[data-theme="dark"][data-dark-variant="midnight"] .drive-item-name      { color: var(--text); }
+[data-theme="dark"][data-dark-variant="midnight"] .drive-item-meta      { color: var(--accent); }
+
+/* ============================================================
+   DEADLINE ITEMS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .deadline-item    { background: var(--surface2); }
+[data-theme="dark"][data-dark-variant="midnight"] .deadline-name    { color: var(--text); }
+[data-theme="dark"][data-dark-variant="midnight"] .deadline-course  { color: var(--text2); }
+[data-theme="dark"][data-dark-variant="midnight"] .deadline-delete  { color: var(--text3); opacity: 0.6; }
+[data-theme="dark"][data-dark-variant="midnight"] .deadline-delete:hover { opacity: 1; background: var(--danger-muted); color: var(--danger); }
+
+/* ============================================================
+   SETTINGS PANEL
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .settings-panel { background: var(--surface2); border-color: var(--border); }
+
+/* ============================================================
+   TASK ITEMS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .task-item  { background: var(--surface2); }
+[data-theme="dark"][data-dark-variant="midnight"] .task-text  { color: var(--text); }
+
+[data-theme="dark"][data-dark-variant="midnight"] .task-check       { border: 2px solid var(--text2); background: var(--surface); cursor: pointer; }
+[data-theme="dark"][data-dark-variant="midnight"] .task-check:hover { border-color: var(--accent); background: var(--accent-muted); }
+[data-theme="dark"][data-dark-variant="midnight"] .task-check.checked       { background: var(--accent2); border-color: var(--accent2); }
+[data-theme="dark"][data-dark-variant="midnight"] .task-check.checked::after { border-color: #ffffff; }
+
+[data-theme="dark"][data-dark-variant="midnight"] .task-delete       { color: var(--text3); opacity: 0.7; }
+[data-theme="dark"][data-dark-variant="midnight"] .task-delete:hover { opacity: 1; background: var(--danger-muted); color: var(--danger); }
+
+/* Task badges */
+[data-theme="dark"][data-dark-variant="midnight"] .badge-todo       { background: rgba(61,184,112,0.2);  color: #4ade80; }
+[data-theme="dark"][data-dark-variant="midnight"] .badge-assignment { background: rgba(255,180,84,0.2);  color: #fbbf24; }
+
+/* ============================================================
+   MODALS
+   ============================================================ */
+[data-theme="dark"][data-dark-variant="midnight"] .modal      { background: var(--surface); border-color: var(--border2); }
+[data-theme="dark"][data-dark-variant="midnight"] .event-desc { background: var(--surface2); border-color: var(--border); }
