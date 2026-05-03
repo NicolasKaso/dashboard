@@ -1,0 +1,67 @@
+<!-- ============================================================
+     INDEX.HTML — CHANGES NEEDED (3 sections)
+     ============================================================ -->
+
+
+<!-- ① In <head>, add AFTER midnight.css link: -->
+<link rel="stylesheet" href="ai-assistant.css">
+
+
+<!-- ② In <header>, add the AI toggle button INSIDE .header-right, 
+     BEFORE the dark-variant-btn button: -->
+<button class="ai-toggle-btn" id="ai-toggle-btn" onclick="window.aiToggle?.()">✦ AI Assistant</button>
+
+
+<!-- ③ BEFORE </body>, add the panel HTML + file input + script:  -->
+
+<!-- Hidden file input for AI -->
+<input type="file" id="ai-file-input" accept="image/*,.csv,.txt,.tsv"
+  style="display:none;" onchange="window.aiHandleFileInput?.(this)">
+
+<!-- AI Assistant Panel -->
+<div class="ai-panel" id="ai-panel">
+  <div class="ai-panel-header">
+    <div class="ai-panel-title">
+      <div class="ai-panel-icon">✦</div>
+      <div>
+        <div>AI Calendar Assistant</div>
+        <div class="ai-panel-subtitle">Powered by Claude</div>
+      </div>
+    </div>
+    <button class="ai-panel-close" onclick="window.aiClose?.()">✕</button>
+  </div>
+
+  <div class="ai-messages" id="ai-messages">
+    <!-- Welcome message -->
+    <div class="ai-bubble assistant">Hi! I can help you manage your calendar. You can ask me to add events, remove classes, or upload a schedule file (CSV or photo) and I'll import everything for you.</div>
+    <!-- Quick suggestions -->
+    <div class="ai-suggestions" id="ai-suggestions">
+      <button class="ai-suggestion-chip" onclick="window.aiSendSuggestion?.('What events do I have this week?')">📅 What events do I have this week?</button>
+      <button class="ai-suggestion-chip" onclick="window.aiSendSuggestion?.('Remove all my classes for the rest of the semester')">🗑 Cancel all classes for the rest of semester</button>
+      <button class="ai-suggestion-chip" onclick="window.aiSendSuggestion?.('Add a study session tomorrow from 2pm to 4pm')">➕ Add a study session tomorrow 2–4pm</button>
+      <button class="ai-suggestion-chip" onclick="window.aiOpenFilePicker?.()">📎 Upload my class schedule (CSV or photo)</button>
+    </div>
+  </div>
+
+  <!-- Attachment preview bar -->
+  <div class="ai-attachment-bar" id="ai-attachment-bar">
+    <span>📎</span>
+    <span class="ai-attachment-name" id="ai-attachment-name"></span>
+    <button class="ai-attachment-remove" onclick="window.aiClearAttachment?.()">✕</button>
+  </div>
+
+  <!-- Input area -->
+  <div class="ai-input-area">
+    <div class="ai-input-row">
+      <button class="ai-file-btn" onclick="window.aiOpenFilePicker?.()" title="Attach schedule file or photo">📎</button>
+      <textarea class="ai-input" id="ai-input" rows="1"
+        placeholder="Ask me to add, remove, or find events…"
+        onkeydown="window.aiKeydown?.(event)"></textarea>
+      <button class="ai-send-btn" id="ai-send-btn" onclick="window.aiSend?.()">➤</button>
+    </div>
+    <div class="ai-input-hint">Shift+Enter for new line · supports images &amp; CSV files</div>
+  </div>
+</div>
+
+<!-- AI script — load BEFORE </body>, after all other scripts -->
+<script src="ai-assistant.js"></script>
