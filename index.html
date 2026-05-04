@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nicolas Dashboard</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="base.css">
+  <link rel="stylesheet" href="calendar.css">
+  <link rel="stylesheet" href="tasks.css">
+  <link rel="stylesheet" href="deadlines.css">
+  <link rel="stylesheet" href="drive.css">
+  <link rel="stylesheet" href="modals.css">
+  <link rel="stylesheet" href="midnight.css">
+  <link rel="stylesheet" href="ai-assistant.css">
+</head>
+<body>
+
+  <div id="toast-container" style="position:fixed;top:16px;right:16px;z-index:9999;min-width:220px;"></div>
+
+  <header>
+    <div class="header-left">
+      <h1>Good <span id="greeting-word">morning</span>, Nicolas</h1>
+      <div class="header-sub">Your personal dashboard</div>
+    </div>
+    <div class="header-right">
+      <span class="header-date" id="header-date"></span>
+      <button class="ai-toggle-btn" id="ai-toggle-btn" onclick="window.aiToggle?.()">✦ AI Assistant</button>
+      <button class="btn-subtle dark-variant-btn" id="dark-variant-btn" onclick="window.cycleDarkVariant?.()" style="display:none;">Classic</button>
+      <div class="theme-switch">
+        <button class="theme-chip active" id="theme-light-btn" onclick="window.setThemeMode?.('light')">Light</button>
+        <button class="theme-chip" id="theme-dark-btn" onclick="window.setThemeMode?.('dark')">Dark</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- LEFT COLUMN: Calendar -->
+    <div>
+      <div class="card cal-card">
+        <div class="card-header">
+          <span class="card-title">Calendar</span>
+          <div class="cal-controls">
+            <div class="view-tabs">
+              <button class="view-tab" id="tab-day"   onclick="window.setView?.('day')">Day</button>
+              <button class="view-tab active" id="tab-week"  onclick="window.setView?.('week')">Week</button>
+              <button class="view-tab" id="tab-month" onclick="window.setView?.('month')">Month</button>
+              <button class="view-tab" id="tab-year"  onclick="window.setView?.('year')">Year</button>
+            </div>
+            <div class="cal-nav">
+              <button class="cal-nav-btn" onclick="window.navCal?.(-1)">‹</button>
+              <span class="cal-nav-label" id="cal-nav-label"></span>
+              <button class="cal-nav-btn" onclick="window.navCal?.(1)">›</button>
+              <button class="cal-nav-btn today-btn" onclick="window.goToday?.()">Today</button>
+            </div>
+            <button class="gcal-btn" id="gcal-btn" onclick="window.handleGCalAuth?.()">
+              <span class="gcal-dot"></span>
+              <span id="gcal-label">Connect Google Calendar</span>
+            </button>
+          </div>
+        </div>
+        <div class="card-body no-pad">
+          <div id="cal-container"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+
+      <!-- Tasks -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Tasks &amp; Assignments</span>
+          <div class="filter-tabs">
+            <button class="filter-tab active" id="filter-all"        onclick="window.filterTasks?.('all')">All</button>
+            <button class="filter-tab"        id="filter-todo"       onclick="window.filterTasks?.('todo')">To-do</button>
+            <button class="filter-tab"        id="filter-assignment" onclick="window.filterTasks?.('assignment')">Assignments</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="task-input-row">
+            <input class="field" id="task-input" type="text" placeholder="Add a task or assignment…"
+              onkeydown="if(event.key==='Enter')window.addTask?.()">
+            <select class="field field-sm" id="task-type">
+              <option value="todo">To-do</option>
+              <option value="assignment">Assignment</option>
+            </select>
+            <button class="btn-subtle" id="urgent-toggle-btn" onclick="window.toggleUrgentInput?.()">! Urgent</button>
+            <button class="btn-primary" onclick="window.addTask?.()">Add</button>
+          </div>
+          <div class="tasks-list" id="tasks-list"></div>
+        </div>
+      </div>
+
+      <!-- Deadlines -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Upcoming Deadlines</span>
+          <div class="header-actions">
+            <button class="btn-subtle" onclick="window.toggleSettings?.()">⚙ Filter</button>
+            <button class="btn-primary" onclick="window.openDeadlineModal?.()">+ Add</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="settings-panel" class="settings-panel" style="display:none;">
+            <div class="settings-label">Exclude keywords (hide matching events)</div>
+            <div class="tag-row" id="exclude-tags"></div>
+            <div class="tag-input-row">
+              <input class="tag-input" id="exclude-input" type="text" placeholder="Add keyword…"
+                onkeydown="if(event.key==='Enter')window.addExcludeTag?.()">
+              <button class="tag-add-btn" onclick="window.addExcludeTag?.()">Add</button>
+            </div>
+          </div>
+          <div class="deadline-list" id="deadline-list"></div>
+        </div>
+      </div>
+
+      <!-- Google Drive -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Google Drive</span>
+          <span class="drive-status" id="drive-status"></span>
+        </div>
+        <div class="card-body">
+          <div class="drive-path" id="drive-path"></div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;align-items:center;">
+            <button class="filter-tab drive-filter-tab active" data-filter="all"    onclick="window.setAllDriveFilters?.(true)">All</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="folder" onclick="window.toggleDriveFilter?.('folder')">📁 Folders</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="pdf"    onclick="window.toggleDriveFilter?.('pdf')">📄 PDFs</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="doc"    onclick="window.toggleDriveFilter?.('doc')">📝 Docs</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="sheet"  onclick="window.toggleDriveFilter?.('sheet')">📊 Sheets</button>
+            <button class="filter-tab drive-filter-tab active" data-filter="slides" onclick="window.toggleDriveFilter?.('slides')">📑 Slides</button>
+            <div class="drive-filter-extra">
+              <button class="filter-tab drive-filter-tab drive-filter-more-btn" onclick="window.toggleDriveMoreMenu?.()">More ▾</button>
+              <div class="drive-filter-menu" id="drive-filter-menu">
+                <label class="drive-filter-menu-item">
+                  <input type="checkbox" id="drive-filter-other" onchange="window.toggleHiddenDriveType?.('other',this.checked)"> Other files
+                </label>
+              </div>
+            </div>
+          </div>
+          <button id="drive-back-btn" class="btn-subtle" onclick="window.driveGoBack?.()" style="display:none;margin-bottom:8px;">← Back</button>
+          <div id="drive-content">
+            <div class="empty-state">Connect Google Calendar above to browse your Drive</div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end right-col -->
+  </div><!-- end layout -->
+
+  <!-- ===== MODALS ===== -->
+
+  <!-- Deadline add modal -->
+  <div class="modal-overlay" id="deadline-modal">
+    <div class="modal">
+      <h3>Add Deadline</h3>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px;">
+        <input class="field" id="dl-name"   type="text"  placeholder="Deadline name…">
+        <input class="field" id="dl-course" type="text"  placeholder="Course / subject…">
+        <input class="field" id="dl-date"   type="date">
+      </div>
+      <div class="modal-row">
+        <button class="modal-btn btn-subtle"  onclick="window.closeDeadlineModal?.()">Cancel</button>
+        <button class="modal-btn btn-primary" onclick="window.confirmDeadline?.()">Add Deadline</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event detail modal -->
+  <div class="modal-overlay event-modal" id="event-modal">
+    <div class="modal event-modal">
+      <h3 id="event-title"></h3>
+      <div class="event-meta" id="event-when"></div>
+      <div class="event-meta" id="event-where"></div>
+      <div class="event-desc" id="event-desc-view" style="display:none;"></div>
+
+      <!-- Edit form (hidden by default) -->
+      <div id="event-edit-form" style="display:none;margin-top:12px;display:none;">
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <input  class="field" id="edit-title"    type="text"  placeholder="Title">
+          <input  class="field" id="edit-location" type="text"  placeholder="Location">
+          <textarea class="field" id="edit-desc"   rows="3"     placeholder="Description" style="resize:vertical;"></textarea>
+          <div id="edit-time-row" style="display:flex;gap:8px;">
+            <input class="field" id="edit-start" type="datetime-local" style="flex:1;">
+            <input class="field" id="edit-end"   type="datetime-local" style="flex:1;">
+          </div>
+        </div>
+      </div>
+
+      <div class="event-actions">
+        <a id="event-open-link" href="#" target="_blank" class="btn-subtle" style="text-decoration:none;padding:5px 11px;border-radius:8px;">Open in Google</a>
+        <button id="event-edit-btn" class="btn-subtle" onclick="window.toggleEventEdit?.()" style="display:none;">Edit</button>
+        <button id="event-save-btn" class="btn-primary" onclick="window.saveEventEdit?.()" style="display:none;">Save</button>
+        <button class="btn-subtle" onclick="window.closeEventModal?.()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PDF viewer modal -->
+  <div class="pdf-modal" id="pdf-modal">
+    <div class="pdf-modal-bar">
+      <span class="pdf-modal-title" id="pdf-modal-title"></span>
+      <a id="pdf-open-link" href="#" target="_blank" class="btn-subtle" style="text-decoration:none;">Open in Drive</a>
+      <button class="btn-subtle" onclick="window.closePdfModal?.()">✕ Close</button>
+    </div>
+    <div class="pdf-modal-body">
+      <iframe id="pdf-iframe" src="" allowfullscreen></iframe>
+    </div>
+  </div>
+
+  <!-- Hidden file input for AI -->
+  <input type="file" id="ai-file-input" accept="image/*,.csv,.txt,.tsv"
+    style="display:none;" onchange="window.aiHandleFileInput?.(this)">
+
+  <!-- AI Assistant Panel -->
+  <div class="ai-panel" id="ai-panel">
+    <div class="ai-panel-header">
+      <div class="ai-panel-title">
+        <div class="ai-panel-icon">✦</div>
+        <div>
+          <div>AI Calendar Assistant</div>
+          <div class="ai-panel-subtitle">Powered by Claude</div>
+        </div>
+      </div>
+      <button class="ai-panel-close" onclick="window.aiClose?.()">✕</button>
+    </div>
+    <div class="ai-messages" id="ai-messages">
+      <div class="ai-bubble assistant">Hi! I can help you manage your calendar. You can ask me to add events, remove classes, or upload a schedule file (CSV or photo) and I'll import everything for you.</div>
+      <div class="ai-suggestions" id="ai-suggestions">
+        <button class="ai-suggestion-chip" onclick="window.aiSendSuggestion?.('What events do I have this week?')">📅 What events do I have this week?</button>
+        <button class="ai-suggestion-chip" onclick="window.aiSendSuggestion?.('Remove all my classes for the rest of the semester')">🗑 Cancel all classes for the rest of semester</button>
+        <button class="ai-suggestion-chip" onclick="window.aiSendSuggestion?.('Add a study session tomorrow from 2pm to 4pm')">➕ Add a study session tomorrow 2–4pm</button>
+        <button class="ai-suggestion-chip" onclick="window.aiOpenFilePicker?.()">📎 Upload my class schedule (CSV or photo)</button>
+      </div>
+    </div>
+    <div class="ai-attachment-bar" id="ai-attachment-bar">
+      <span>📎</span>
+      <span class="ai-attachment-name" id="ai-attachment-name"></span>
+      <button class="ai-attachment-remove" onclick="window.aiClearAttachment?.()">✕</button>
+    </div>
+    <div class="ai-input-area">
+      <div class="ai-input-row">
+        <button class="ai-file-btn" onclick="window.aiOpenFilePicker?.()" title="Attach file">📎</button>
+        <textarea class="ai-input" id="ai-input" rows="1"
+          placeholder="Ask me to add, remove, or find events…"
+          onkeydown="window.aiKeydown?.(event)"></textarea>
+        <button class="ai-send-btn" id="ai-send-btn" onclick="window.aiSend?.()">➤</button>
+      </div>
+      <div class="ai-input-hint">Shift+Enter for new line · supports images &amp; CSV files</div>
+    </div>
+  </div>
+
+  <!-- Scripts (order matters) -->
+  <script src="config.js"></script>
+  <script src="state.js"></script>
+  <script src="theme.js"></script>
+  <script src="google-api.js"></script>
+  <script src="calendar.js"></script>
+  <script src="tasks.js"></script>
+  <script src="deadlines.js"></script>
+  <script src="drive.js"></script>
+  <script src="modals.js"></script>
+  <script src="ai-assistant.js"></script>
+  <script src="init.js"></script>
+</body>
+</html>
