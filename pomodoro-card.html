@@ -1,0 +1,74 @@
+<!-- ===== POMODORO CARD — paste inside .right-col, after the Tasks card ===== -->
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Pomodoro Timer</span>
+    <button class="btn-subtle" onclick="window.pomoToggleSettings?.()">⚙ Settings</button>
+  </div>
+
+  <div class="pomo-body">
+
+    <!-- Mode tabs -->
+    <div class="pomo-mode-tabs">
+      <button class="pomo-mode-tab active" data-mode="focus" onclick="window.pomoSetMode?.('focus')">Focus</button>
+      <button class="pomo-mode-tab"        data-mode="short" onclick="window.pomoSetMode?.('short')">Short Break</button>
+      <button class="pomo-mode-tab"        data-mode="long"  onclick="window.pomoSetMode?.('long')">Long Break</button>
+    </div>
+
+    <!-- Ring timer -->
+    <div class="pomo-ring-wrap">
+      <svg class="pomo-svg" viewBox="0 0 160 160">
+        <circle class="pomo-track"    cx="80" cy="80" r="68"/>
+        <circle class="pomo-progress" cx="80" cy="80" r="68" id="pomo-ring"
+          style="stroke-dasharray:427.3;stroke-dashoffset:0;"/>
+      </svg>
+      <div class="pomo-center">
+        <div class="pomo-time"  id="pomo-time">25:00</div>
+        <div class="pomo-label" id="pomo-mode-label">Focus</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="pomo-controls">
+      <button class="pomo-btn-sm" onclick="window.pomoReset?.()" title="Reset">↺</button>
+      <button class="pomo-btn-main" id="pomo-play-btn" onclick="window.pomoToggle?.()">▶</button>
+      <div class="pomo-sessions" id="pomo-dots">
+        <!-- dots rendered by JS -->
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="pomo-stats">
+      <div class="pomo-stat">
+        <div class="pomo-stat-val" id="pomo-stat-sessions">0</div>
+        <div class="pomo-stat-lbl">Sessions</div>
+      </div>
+      <div class="pomo-stat">
+        <div class="pomo-stat-val" id="pomo-stat-focus">0m</div>
+        <div class="pomo-stat-lbl">Focus time</div>
+      </div>
+    </div>
+
+    <!-- Settings panel -->
+    <div class="pomo-settings" id="pomo-settings">
+      <div class="pomo-setting-row">
+        <label>Focus (min)</label>
+        <input class="pomo-setting-input" id="pomo-cfg-focus" type="number" min="1" max="120" value="25">
+      </div>
+      <div class="pomo-setting-row">
+        <label>Short break (min)</label>
+        <input class="pomo-setting-input" id="pomo-cfg-short" type="number" min="1" max="60" value="5">
+      </div>
+      <div class="pomo-setting-row">
+        <label>Long break (min)</label>
+        <input class="pomo-setting-input" id="pomo-cfg-long" type="number" min="1" max="60" value="15">
+      </div>
+      <div class="pomo-setting-row">
+        <label>Sessions until long break</label>
+        <input class="pomo-setting-input" id="pomo-cfg-until" type="number" min="1" max="10" value="4">
+      </div>
+      <button class="btn-primary" style="width:100%;margin-top:4px;" onclick="window.pomoApplySettings?.()">Apply</button>
+    </div>
+
+  </div>
+</div>
+<!-- ===== END POMODORO CARD ===== -->
