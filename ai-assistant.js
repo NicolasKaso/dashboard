@@ -5,7 +5,7 @@
  * Depends on: config.js, state.js, google-api.js, calendar.js
  */
 
-const AI_GROQ_KEY = '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';
+const AI_GROQ_KEY = 'xai-muw7iv3M9nyyiBAAi8Eq09tl80o22mjikZluwS23X8Ig6C97yk5aNWnMFPrwzg9FObCHjIVvwY0YihaO';
 const AI_MODEL    = 'llama-3.3-70b-versatile';
 const AI_SYSTEM   = `You are a calendar assistant for a student dashboard. Today is ${new Date().toDateString()}.
 You can manage the user's Google Calendar using the provided tools.
